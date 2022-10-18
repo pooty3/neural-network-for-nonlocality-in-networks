@@ -38,35 +38,32 @@ def build_model():
     #for _ in range(cf.pnn.greek_depth):
      #   group_lambda = Dense(cf.pnn.greek_width,activation=cf.pnn.activ, kernel_regularizer=cf.pnn.kernel_reg)(group_lambda)
 
-    group_a1 = Concatenate()([group_lambda,group_x_hidden])
+    group_a = Concatenate()([group_lambda,group_x_hidden])
     group_b1 = Concatenate()([group_lambda,group_y_hidden])
-    group_a2 = Concatenate()([group_lambda,group_x_hidden])
     group_b2 = Concatenate()([group_lambda,group_y_hidden])
     group_p = Concatenate()([group_lambda,group_x_hidden])
     ## Note: increasing the variance of the initialization seemed to help in some cases, especially when the number if outputs per party is 4 or more.
     kernel_init = VarianceScaling(scale=cf.pnn.weight_init_scaling, mode='fan_in', distribution='truncated_normal', seed=None)
 
     for _ in range(cf.pnn.latin_depth):
-        group_a1 = Dense(cf.pnn.latin_width,activation=cf.pnn.activ, kernel_regularizer=cf.pnn.kernel_reg, kernel_initializer = kernel_init)(group_a1)
+        group_a = Dense(cf.pnn.latin_width,activation=cf.pnn.activ, kernel_regularizer=cf.pnn.kernel_reg, kernel_initializer = kernel_init)(group_a)
         group_b1 = Dense(cf.pnn.latin_width,activation=cf.pnn.activ, kernel_regularizer=cf.pnn.kernel_reg, kernel_initializer = kernel_init)(group_b1)
-        group_a2 = Dense(cf.pnn.latin_width,activation=cf.pnn.activ, kernel_regularizer=cf.pnn.kernel_reg, kernel_initializer = kernel_init)(group_a2)
         group_b2 = Dense(cf.pnn.latin_width,activation=cf.pnn.activ, kernel_regularizer=cf.pnn.kernel_reg, kernel_initializer = kernel_init)(group_b2)
         group_p = Dense(cf.pnn.latin_width,activation=cf.pnn.activ, kernel_regularizer=cf.pnn.kernel_reg, kernel_initializer = kernel_init)(group_p)
 
-    group_a1 = Dense(cf.pnn.a_outputsize,activation=cf.pnn.activ2, kernel_regularizer=cf.pnn.kernel_reg)(group_a1)
+    group_a = Dense(cf.pnn.a_outputsize,activation=cf.pnn.activ2, kernel_regularizer=cf.pnn.kernel_reg)(group_a)
     group_b1 = Dense(cf.pnn.b_outputsize,activation=cf.pnn.activ2, kernel_regularizer=cf.pnn.kernel_reg)(group_b1)
-    group_a2 = Dense(cf.pnn.a_outputsize,activation=cf.pnn.activ2, kernel_regularizer=cf.pnn.kernel_reg)(group_a2)
     group_b2 = Dense(cf.pnn.b_outputsize,activation=cf.pnn.activ2, kernel_regularizer=cf.pnn.kernel_reg)(group_b2)
-    group_p = Dense(cf.pnn.b_outputsize,activation=cf.pnn.activ2, kernel_regularizer=cf.pnn.kernel_reg)(group_p)
+    group_p = Dense(1,activation="sigmoid", kernel_regularizer=cf.pnn.kernel_reg)(group_p)
     
-    def doThis(layer1, layer2, layerp, stid):
-        group_xx = Lambda(lambda x: x[:,stid:stid+1], output_shape=((1,)))(layer1)
-        group_yy = Lambda(lambda x: x[:,stid:stid+1], output_shape=((1,)))(layer2)
-        return Lambda(lambda x: x[0]*x[1] + (1-x[0])*x[2])([layerp, group_xx, group_yy])
+    group_bb = Concatenate()([group_b1, group_b2, group_p])
+    group_b = Lambda(lambda x: tf.stack([x[:, 0]*x[:, 4] + x[:,2]*(1-x[:,4]), x[:, 1]*x[:, 4] + x[:,3]*(1-x[:,4])], axis = 1))(group_bb)
+    #def doThis(layer1, layer2, layerp, stid):
+     #   group_xx = Lambda(lambda x: x[:,stid:stid+1], output_shape=((1,)))(layer1)
+      #  group_yy = Lambda(lambda x: x[:,stid:stid+1], output_shape=((1,)))(layer2)
+       # return Lambda(lambda x: x[0]*x[1] + (1-x[0])*x[2])([layerp, group_xx, group_yy])*/
     
-    outputTensor = Concatenate()([group_x, group_y, doThis(group_a1, group_a2, group_p, 0),
-    doThis(group_a1, group_a2, group_p, 1),doThis(group_b1, group_b2, group_p, 0),
-    doThis(group_b1, group_b2, group_p, 1)])
+    outputTensor = Concatenate()([group_x, group_y, group_a, group_b])
     #group_a = Lambda(comfunc, output_shape= ((2,)))(group_aa)
     #group_b = Lambda(comfunc, output_shape= ((2,)))(group_bb)
     #outputTensor = Concatenate()([group_x,group_y,group_a1,group_b1])
