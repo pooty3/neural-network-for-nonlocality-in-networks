@@ -152,7 +152,9 @@ def generate_xy_batch():
         ainputs = np.random.choice(cf.pnn.ainputsize, (cf.pnn.batch_size,1))
         binputs = np.random.choice(cf.pnn.binputsize, (cf.pnn.batch_size,1))
         temp = np.concatenate((temp, ainputs, binputs), axis=1)
-        yield (temp, cf.pnn.y_true)
+        res = (temp, cf.pnn.y_true)
+        print(res)
+        yield res
 
 def generate_x_test():
     while True:
@@ -262,3 +264,4 @@ def update_results(model_new,i):
     plt.title("Target distr. (in red): {} {:.3f}".format(cf.pnn.target_distr_name, cf.pnn.target_ids[i]))
     plt.ylim(bottom=0,top=max(cf.pnn.p_target)*1.2)
     plt.savefig("./figs_distributions/target_"+str(i).zfill(int(np.ceil(np.log10(cf.pnn.target_ids.shape[0]))))+".png")
+
