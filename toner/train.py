@@ -10,8 +10,8 @@ from tensorflow.keras.initializers import VarianceScaling
 import qutip as qt
 import random
 import tensorflow as tf
-batch_size = 350
-hidden_var_size = 1000
+batch_size = 80
+hidden_var_size = 500
 def get_projector(vector, res):
     dot_pro = qt.sigmax()*vector[0] + qt.sigmay()*vector[1] + qt.sigmaz()*vector[2]
     return 1/2*(qt.identity(2) + dot_pro * (-1 if res == 0 else 1))
