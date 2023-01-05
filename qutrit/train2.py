@@ -224,6 +224,6 @@ def run_model_communication(img_path):
     plt.scatter(entangled_amount, results)
     plt.savefig(img_path)
 
-run_model("loss_plot.png")
+run_model_communication("loss_plot_comm.png")
 #build_and_save_model("my_model3.h5")
 
