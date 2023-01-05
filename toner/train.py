@@ -10,8 +10,8 @@ from tensorflow.keras.initializers import VarianceScaling
 import qutip as qt
 import random
 import tensorflow as tf
-batch_size = 80
-hidden_var_size = 500
+batch_size = 400
+hidden_var_size = 1000
 def get_projector(vector, res):
     dot_pro = qt.sigmax()*vector[0] + qt.sigmay()*vector[1] + qt.sigmaz()*vector[2]
     return 1/2*(qt.identity(2) + dot_pro * (-1 if res == 0 else 1))
@@ -148,8 +148,8 @@ def build_and_save_model(file_path):
     keras.utils.plot_model(model, show_shapes=True)
     optimizer = "adam"
     model.compile(loss = compute_loss, optimizer = optimizer, metrics = [])
-    model.fit_generator(generate_xy_batch(), steps_per_epoch=100, epochs=100, verbose=1, validation_data=generate_xy_batch(), validation_steps=20, class_weight=None, max_queue_size=10, workers=1, use_multiprocessing=False, shuffle=False, initial_epoch=0)
-    model.save("my_model")
+    model.fit_generator(generate_xy_batch(), steps_per_epoch=50, epochs=100, verbose=1, validation_data=generate_xy_batch(), validation_steps=5, class_weight=None, max_queue_size=10, workers=1, use_multiprocessing=False, shuffle=False, initial_epoch=0)
+    model.save(file_path)
 
-build_and_save_model("my_model")
+build_and_save_model("my_model3.h5")
 
