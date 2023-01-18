@@ -10,5 +10,5 @@ np=$(cat ${PBS_NODEFILE} | wc -l);
 image="/app1/common/singularity-img/3.0.0/tensorflow_2.9.1_cuda_11.8.0-cudnn8-ubuntu20.04-py38.sif"
 singularity exec -e $image bash << EOF > stdout.$PBS_JOBID 2> stderr.$PBS_JOBID
 export PYTHONPATH=$PYTHONPATH:/home/svu/e0407574/volta_pypkg/lib/python3.8/site-packages
-python3 train.py
+python3 comm_train.py
 EOF

@@ -12,9 +12,9 @@ import random
 import tensorflow as tf
 import distributions as db
 
-hidden_variable_size = 1000
-no_of_settings = 2
-'''
+hidden_variable_size = 3000
+no_of_settings = 4
+
 alice_unitaries = [
     qt.Qobj([[ 0.61551508+0.36591687j, -0.65603294+0.04648796j, -0.22843137-0.05024736j],
  [ 0.01028608+0.36349963j,  0.10782052+0.01521212j,  0.10115754+0.91960464j],
@@ -49,9 +49,9 @@ qt.Qobj(
  [ 0.53159216+0.44306896j,  0.04278361+0.30318679j,  0.44754531+0.47649785j],
  [ 0.16734874-0.57841603j,  0.10903907-0.2570406j,  -0.22269029+0.71405808j]])
 ]
-'''
-alice_unitaries = db.getaliceGCLMP()
-bob_unitaries = db.getBobGCLMP()
+
+#alice_unitaries = db.getaliceGCLMP()
+#bob_unitaries = db.getBobGCLMP()
 def build_model():
     input_tensor = Input((3,))
     group_lambda = Lambda(lambda x: x[:, :1], output_shape = ((1,)))(input_tensor)
@@ -188,18 +188,21 @@ def compute_loss_communication(y_true, y_pred):
         loss += err
     return loss/(no_of_settings*no_of_settings)
 
+no_of_epochs = 150
+batch_per_epochs = 50
+data_points = 6
 def run_model(img_path):
     entangled_amount = []
     results = []
-    for w in np.linspace(0,1,16, endpoint= True):
+    for w in np.linspace(0.5,1,data_points, endpoint= True):
         print(w)
         model = build_model()
     #model = build_model2()
         #keras.utils.plot_model(model, show_shapes=True)
         optimizer = "adam"
         model.compile(loss = compute_loss, optimizer = optimizer, metrics = [])
-        model.fit(generate_xy_batch(w), steps_per_epoch=50, epochs=200, verbose=1, validation_data=generate_xy_batch(w), validation_steps=5, class_weight=None, max_queue_size=10, workers=1, use_multiprocessing=False, shuffle=False, initial_epoch=0)
-        result = model.evaluate(generate_xy_batch(w), steps = 10)
+        model.fit(generate_xy_batch(w), steps_per_epoch = batch_per_epochs, epochs = no_of_epochs, verbose=1, validation_data=generate_xy_batch(w), validation_steps=5, class_weight=None, max_queue_size=10, workers=1, use_multiprocessing=False, shuffle=False, initial_epoch=0)
+        result = model.evaluate(generate_xy_batch(w), steps = 40)
         entangled_amount.append(w)
         results.append(result)
     plt.clf()
@@ -209,21 +212,21 @@ def run_model(img_path):
 def run_model_communication(img_path):
     entangled_amount = []
     results = []
-    for w in np.linspace(0,1,16, endpoint= True):
+    for w in np.linspace(0.5,1,data_points, endpoint= True):
         print(w, "comm")
         model = build_model_communication()
     #model = build_model2()
         #keras.utils.plot_model(model, show_shapes=True)
         optimizer = "adam"
         model.compile(loss = compute_loss_communication, optimizer = optimizer, metrics = [])
-        model.fit(generate_xy_batch(w), steps_per_epoch=50, epochs=200, verbose=1, validation_data=generate_xy_batch(w), validation_steps=5, class_weight=None, max_queue_size=10, workers=1, use_multiprocessing=False, shuffle=False, initial_epoch=0)
-        result = model.evaluate(generate_xy_batch(w), steps = 10)
+        model.fit(generate_xy_batch(w), steps_per_epoch = batch_per_epochs, epochs = no_of_epochs, verbose=1, validation_data=generate_xy_batch(w), validation_steps=5, class_weight=None, max_queue_size=10, workers=1, use_multiprocessing=False, shuffle=False, initial_epoch=0)
+        result = model.evaluate(generate_xy_batch(w), steps = 40)
         entangled_amount.append(w)
         results.append(result)
     plt.clf()
     plt.scatter(entangled_amount, results)
     plt.savefig(img_path)
 
-run_model("loss_plot.png")
+#run_model("loss_plot.png")
 #build_and_save_model("my_model3.h5")
 
