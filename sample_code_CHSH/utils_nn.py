@@ -163,11 +163,11 @@ def single_run():
         model = load_model(cf.pnn.start_from,custom_objects={'customLoss': customLoss})
 
     if cf.pnn.optimizer.lower() == 'adadelta':
-        optimizer = tf.keras.optimizers.Adadelta(lr=cf.pnn.lr, rho=0.95, epsilon=None, decay=cf.pnn.decay)
+        optimizer = tf.keras.optimizers.legacy.Adadelta(lr=cf.pnn.lr, rho=0.95, epsilon=None, decay=cf.pnn.decay)
     elif cf.pnn.optimizer.lower() == 'sgd':
-        optimizer = tf.keras.optimizers.SGD(lr=cf.pnn.lr, decay=cf.pnn.decay, momentum=cf.pnn.momentum, nesterov=True)
+        optimizer = tf.keras.optimizers.legacy.SGD(lr=cf.pnn.lr, decay=cf.pnn.decay, momentum=cf.pnn.momentum, nesterov=True)
     else:
-        optimizer = tf.keras.optimizers.SGD(lr=cf.pnn.lr, decay=cf.pnn.decay, momentum=cf.pnn.momentum, nesterov=True)
+        optimizer = tf.keras.optimizers.legacy.SGD(lr=cf.pnn.lr, decay=cf.pnn.decay, momentum=cf.pnn.momentum, nesterov=True)
         print("\n\nWARNING!!! Optimizer {} not recognized. Please implement it if you want to use it. Using SGD instead.\n\n".format(cf.pnn.optimizer))
         cf.pnn.optimizer = 'sgd' # set it for consistency.
 

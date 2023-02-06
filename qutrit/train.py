@@ -190,11 +190,11 @@ def compute_loss_communication(y_true, y_pred):
 
 no_of_epochs = 150
 batch_per_epochs = 50
-data_points = 6
-def run_model(img_path):
+data_points = 13
+def run_model(img_path, data_path):
     entangled_amount = []
     results = []
-    for w in np.linspace(0.5,1,data_points, endpoint= True):
+    for w in np.linspace(0,1,data_points, endpoint= True):
         print(w)
         model = build_model()
     #model = build_model2()
@@ -205,14 +205,18 @@ def run_model(img_path):
         result = model.evaluate(generate_xy_batch(w), steps = 40)
         entangled_amount.append(w)
         results.append(result)
+    f = open(data_path, 'w+')
+    f.write(str(entangled_amount))
+    f.write(str(results))
+    f.close()
     plt.clf()
     plt.scatter(entangled_amount, results)
     plt.savefig(img_path)
 
-def run_model_communication(img_path):
+def run_model_communication(img_path, data_path):
     entangled_amount = []
     results = []
-    for w in np.linspace(0.5,1,data_points, endpoint= True):
+    for w in np.linspace(0,1,data_points, endpoint= True):
         print(w, "comm")
         model = build_model_communication()
     #model = build_model2()
@@ -223,6 +227,10 @@ def run_model_communication(img_path):
         result = model.evaluate(generate_xy_batch(w), steps = 40)
         entangled_amount.append(w)
         results.append(result)
+    f = open(data_path, 'w+')
+    f.write(str(entangled_amount))
+    f.write(str(results))
+    f.close()
     plt.clf()
     plt.scatter(entangled_amount, results)
     plt.savefig(img_path)
