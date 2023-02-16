@@ -1,3 +1,3 @@
 import train as tr
 
-tr.run_model_communication("comm_loss_2.png")
+tr.run_model_communication("comm_3.png", "comm_3.txt")
