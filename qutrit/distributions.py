@@ -5,6 +5,13 @@ from numpy.linalg import qr
 import qutip as qt
 import random
 
+def get_spin_projectors(vec, N = 3):
+    mats = qt.jmat((N-1.0)/2)
+    spin_op = mats[0]*vec[0] + mats[1]*vec[1] + mats[2]*vec[2]
+    [_, state] = spin_op.eigenstates()   
+
+    return [st.proj() for st in state]
+
 
 
 def get_random_unitary2(N = 3):
@@ -30,6 +37,13 @@ def getprobabilities(alice_U, bob_U, w, N = 3):
     return probs
 
     
+def get_spin_probs(alice_vec, bob_vec, w, N = 3):
+    quantum_resource = werner_state(w, N)
+    alice_proj = get_spin_projectors(alice_vec, N)
+    bob_proj = get_spin_projectors(bob_vec, N)
+    probs = [np.abs((qt.tensor(alice_proj[i], bob_proj[j])*quantum_resource).tr()) for i in range(N) for j in range(N)]
+    assert(np.abs(sum(probs) -1 ) < 0.00001)
+    return probs
 
 
 def getaliceproj(input, output):
