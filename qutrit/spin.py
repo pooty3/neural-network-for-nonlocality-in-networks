@@ -11,9 +11,9 @@ import qutip as qt
 import random
 import tensorflow as tf
 import distributions as db
-
-hidden_variable_size = 400
-batch_size = 200
+from math import *
+hidden_variable_size = 300
+batch_size = 130
 
 
 def generate_unit_vector(): 
@@ -23,20 +23,21 @@ def generate_unit_vector():
     vec = [x,y,z]
     return vec/np.linalg.norm(vec)
 
-
+def convert_to_spherical(vec):
+    return [acos(vec[2]), atan2(vec[1], vec[0])]
 
 
 def build_model():
-    input_tensor = Input((12,))
-    group_lambda = Lambda(lambda x: x[:, :6], output_shape = ((1,)))(input_tensor)
-    input_x = Lambda(lambda x: x[:, 6:9], output_shape = ((1,)))(input_tensor)
-    input_y = Lambda(lambda x: x[:, 9:12], output_shape = ((1,)))(input_tensor)
+    input_tensor = Input((8,))
+    group_lambda = Lambda(lambda x: x[:, :4], output_shape = ((1,)))(input_tensor)
+    input_x = Lambda(lambda x: x[:, 4:6], output_shape = ((2,)))(input_tensor)
+    input_y = Lambda(lambda x: x[:, 6:8], output_shape = ((2,)))(input_tensor)
     group_a = Concatenate()([group_lambda, input_x])
     group_b = Concatenate()([group_lambda, input_y])
     
     kernel_init = None
     act_func = "relu"
-    width = 30
+    width = 20
     regu = None
     for _ in range(3):
         group_a = Dense(width,activation=act_func, kernel_regularizer=regu, kernel_initializer = kernel_init)(group_a)
@@ -54,10 +55,10 @@ def build_model():
 
 
 def build_model_communication():
-    input_tensor = Input((12,))
-    group_lambda = Lambda(lambda x: x[:, :6], output_shape = ((1,)))(input_tensor)
-    input_x = Lambda(lambda x: x[:, 6:9], output_shape = ((1,)))(input_tensor)
-    input_y = Lambda(lambda x: x[:, 9:12], output_shape = ((1,)))(input_tensor)
+    input_tensor = Input((8))
+    group_lambda = Lambda(lambda x: x[:, :4], output_shape = ((4,)))(input_tensor)
+    input_x = Lambda(lambda x: x[:, 4:6], output_shape = ((2,)))(input_tensor)
+    input_y = Lambda(lambda x: x[:, 6:8], output_shape = ((2,)))(input_tensor)
     group_a1 = Concatenate()([group_lambda, input_x])
     group_b1 = Concatenate()([group_lambda, input_y])
     group_a2 = Concatenate()([group_lambda, input_x])
@@ -65,7 +66,7 @@ def build_model_communication():
     group_p = Concatenate()([group_lambda, input_x])
     kernel_init = None
     act_func = "relu"
-    width = 30
+    width = 20
     regu = None
     for _ in range(3):
         group_a1 = Dense(width,activation=act_func, kernel_regularizer=regu, kernel_initializer = kernel_init)(group_a1)
@@ -94,11 +95,14 @@ def generate_xy_batch(w):
         for _ in range(batch_size):
             vx = generate_unit_vector()
             vy = generate_unit_vector()
+            sx = convert_to_spherical(vx)
+            sy = convert_to_spherical(vy)
             answer = db.get_spin_probs(vx,vy,w, N = 3)
             for _ in range(hidden_variable_size):
-                temp1 = generate_unit_vector()
-                temp2 = generate_unit_vector()
-                input= np.concatenate((temp1,temp2, vx,vy))
+                temp1 = convert_to_spherical(generate_unit_vector())
+                temp2 = convert_to_spherical(generate_unit_vector())
+                #input = np.concatenate(([random.uniform(0,1)], sx, sy))
+                input= np.concatenate((temp1,temp2, sx, sy))
                 inputs.append(input.tolist())
                 answers.append(answer)
         res = (np.array(inputs), np.array(answers))
@@ -166,12 +170,14 @@ def compute_loss_communication(y_true, y_pred):
     return loss/(batch_size)
 
 no_of_epochs = 100
-batch_per_epochs = 50
+batch_per_epochs = 35
 data_points = 13
+
+wspace = [0, 0.3, 0.5, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95, 1.0]
 def run_model(img_path, data_path):
     entangled_amount = []
     results = []
-    for w in np.linspace(0,1,data_points, endpoint= True):
+    for w in wspace:
         print(w)
         model = build_model()
     #model = build_model2()
@@ -193,7 +199,7 @@ def run_model(img_path, data_path):
 def run_model_communication(img_path, data_path):
     entangled_amount = []
     results = []
-    for w in np.linspace(0,1,data_points, endpoint= True):
+    for w in wspace:
         print(w, "comm")
         model = build_model_communication()
     #model = build_model2()
@@ -213,4 +219,4 @@ def run_model_communication(img_path, data_path):
     plt.savefig(img_path)
 
 
-run_model("spin.jpg", "dataspin.txt")
+run_model_communication("spin.jpg", "dataspin.txt")

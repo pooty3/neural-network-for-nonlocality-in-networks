@@ -5,15 +5,15 @@ addpath(genpath("D:\school\y4s1\fyp2\neural-network-for-nonlocality-in-networks\
 
 
 
-wid = fopen("3333seqmat.txt", "w")
+wid = fopen("4333seqmat2.txt", "w")
 
-fid = fopen("3333seq.txt", "rt");
+fid = fopen("4333seq2.txt", "rt");
 while true
     line = fgetl(fid);
     if ~ischar(line); break; end
     tokens = split(line);
     tokens(1)
-    amt = get_threshhold(3,3,tokens(1));
+    amt = get_threshhold(4,3,tokens(1));
     fprintf(wid, '%s %.4f\n', convertCharsToStrings(tokens(1)), amt);
 end
 fclose(fid);
@@ -27,7 +27,7 @@ function noisethres = get_threshhold(alice_in, bob_in, str)
         variable lambda;
         minimize lambda;
         subject to
-            NPAHierarchy(lambda*p_random + (1-lambda)*prbox,desc,2) == 1;
+            NPAHierarchy(lambda*p_random + (1-lambda)*prbox,desc,'1+ab') == 1;
    cvx_end
    noisethres = cvx_optval;
 end
