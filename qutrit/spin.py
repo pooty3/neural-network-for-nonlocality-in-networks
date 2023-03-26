@@ -12,10 +12,10 @@ import random
 import tensorflow as tf
 import distributions as db
 from math import *
-hidden_variable_size = 300
-batch_size = 130
+hidden_variable_size = 500
+batch_size = 400
 
-
+ 
 def generate_unit_vector(): 
     x = random.uniform(-1,1)
     y = random.uniform(-1,1)
@@ -29,7 +29,7 @@ def convert_to_spherical(vec):
 
 def build_model():
     input_tensor = Input((8,))
-    group_lambda = Lambda(lambda x: x[:, :4], output_shape = ((1,)))(input_tensor)
+    group_lambda = Lambda(lambda x: x[:, :4], output_shape = ((4,)))(input_tensor)
     input_x = Lambda(lambda x: x[:, 4:6], output_shape = ((2,)))(input_tensor)
     input_y = Lambda(lambda x: x[:, 6:8], output_shape = ((2,)))(input_tensor)
     group_a = Concatenate()([group_lambda, input_x])
@@ -124,8 +124,13 @@ def keras_distance(p,q):
     """
     p = K.clip(p, K.epsilon(), 1)
     q = K.clip(q, K.epsilon(), 1)
-    avg = (p+q)/2
-    return K.sum(p * K.log(p / avg), axis=-1) + K.sum(q * K.log(q / avg), axis=-1)
+    return K.sum(p * K.log(p / q), axis=-1)
+
+
+    # p = K.clip(p, K.epsilon(), 1)
+    # q = K.clip(q, K.epsilon(), 1)
+    # avg = (p+q)/2
+    # return K.sum(p * K.log(p / avg), axis=-1) + K.sum(q * K.log(q / avg), axis=-1)
 
 
 def compute_loss(y_true, y_pred):
@@ -170,7 +175,7 @@ def compute_loss_communication(y_true, y_pred):
     return loss/(batch_size)
 
 no_of_epochs = 100
-batch_per_epochs = 35
+batch_per_epochs = 50
 data_points = 13
 
 wspace = [0, 0.3, 0.5, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95, 1.0]
@@ -219,4 +224,12 @@ def run_model_communication(img_path, data_path):
     plt.savefig(img_path)
 
 
-run_model_communication("spin.jpg", "dataspin.txt")
+def train_and_save_comm(model_path):
+    model = build_model_communication()
+    #model = build_model2()
+    optimizer = "adam"
+    model.compile(loss = compute_loss, optimizer = optimizer, metrics = [])
+    model.fit(generate_xy_batch(1.0), steps_per_epoch = batch_per_epochs, epochs = 100, verbose=1, validation_data=generate_xy_batch(1.0), validation_steps=5, class_weight=None, max_queue_size=10, workers=1, use_multiprocessing=False, shuffle=False, initial_epoch=0)
+    model.save(model_path)
+
+train_and_save_comm("spin_model_kl.h5")

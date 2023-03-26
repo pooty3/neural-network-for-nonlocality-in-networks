@@ -230,9 +230,7 @@ def test_qutrit_CGLMP(communication):
 
 def test_qutrit(alice_settings, bob_settings, communication):
     polytope = generate_polytope_1_bit(alice_settings, bob_settings, 3,3) if communication else generate_polytope_no_comm(alice_settings, bob_settings, 3,3) 
-    print("Heyo1!")
     A = polytope.get_A_matrix()
-    print("Heyo!")
     TRIES = 100
     for w in np.linspace(0.9,1,3):
         success = 0
@@ -257,39 +255,41 @@ def test_qutrit(alice_settings, bob_settings, communication):
 #test_qutrit_comm_CGLMP()
 #test_qutrit_comm(3,3)
 
-def check_violation_for_setting(alice_in, bob_in, alice_out, bob_out, filepath):
+def check_violation_for_setting(alice_in, bob_in, alice_out, bob_out, filepath, logfile, TOTAL):
+    log = open(logfile, 'w') 
     path = Path(filepath)
     if not path.is_file():
         poly = generate_polytope_1_bit(alice_in, bob_in, alice_out, bob_out).get_A_matrix()
         SavedA(poly).save_file(filepath)
     A = load_saved_A(filepath).get_A()
-    print("A length: ", len(A))
-    print("A row length: ", len(A[0]))
+    log.write("A length: " +  str(len(A)) + "\n")
+    log.write("A row length: "+  str(len(A[0])) + "\n")
     fast_rej_count = 0
     A_no_comm = generate_polytope_no_comm(alice_in, bob_in, alice_out, bob_out).get_A_matrix()
-    for tr in range(100):
+    for tr in range(TOTAL):
         alice_U = [db.get_random_unitary2(N = alice_out) for _ in range(alice_in)]
         bob_U = [db.get_random_unitary2(N = bob_out) for _ in range(bob_in)]
         prob = []
         for a in range(alice_in):
             for b in range(bob_in):
                 prob += db.getprobabilities(alice_U[a],bob_U[b], 1, N = alice_out)
-        
         print(tr)
-        tic = time.perf_counter()
         if (within_bounds_A(A_no_comm, prob)):
             fast_rej_count += 1 
-            print("Fast reject!", fast_rej_count, "otu of ", tr+1, "percentage of ", float(fast_rej_count)/(tr+1))
-            toc = time.perf_counter()
-            print(toc - tic)
+            log.write("Fast reject!" +  str(fast_rej_count)  + "out of " +  str(tr+1) + "\n")
             continue
         if (not within_bounds_A(A, prob)):
             print("Bob: ", bob_U)
             print("Alice: ", alice_U)
+            log.write("Bob " + str(bob_U) + "\n")
+            log.write("Alice: "+ str(alice_U) + "\n")
             break
-        toc = time.perf_counter()
-        print(toc - tic)
+    log.write("Tried " + str(TOTAL)  + " samples in total\n")
+    log.close()
 
-#check_violation_for_setting(3,3,3,3, "3333.obj")
+
+#check_violation_for_setting(3,3,3,3, "3333.obj", "3333log.txt", 4000)
+#check_violation_for_setting(3,4,3,3, "3333.obj", "3433log.txt", 1000)
+#check_violation_for_setting(4,3,3,3, "3333.obj", "4333log.txt", 1000)
 #check_violation_for_setting(3,4,3,3, "3433.obj") #11
 #check_violation_for_setting(4,3,3,3, "4333.obj") #9
