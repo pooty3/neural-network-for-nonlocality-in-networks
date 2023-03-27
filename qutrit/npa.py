@@ -137,20 +137,20 @@ class Debugger:
         self.f.write("\n")
     
 def dostuff():
-    f = open("4344seq2.txt", "w")
+    f = open("3433seq2.txt", "w")
     ss = set()
     tr = 0
     dups = 0
     LINES = 40
-    AcommL = loosenedA(retreive(4,3,4,4, "4344_1npa.obj", True))
-    AnonL = loosenedA(retreive(4,3,4,4, "4344_0npa.obj", False))
+    AcommL = loosenedA(retreive(3,4,3,3, "3433_1npa.obj", True))
+    AnonL = loosenedA(retreive(3,4,3,3, "3433_0npa.obj", False))
     for _ in range(LINES):
         tr += 1
         print(tr)
-        s1 = random_str44(sz = 12)
+        s1 = random_str(sz = 12)
         print(s1)
-        p1 = get_noise_threshhold3(s1, AcommL)
-        p2 = get_noise_threshhold3(s1, AnonL)
+        p1 = get_noise_threshhold2(s1, AcommL)
+        p2 = get_noise_threshhold2(s1, AnonL)
         print(p1, p2)
         if (p1,p2) in ss:
             dups += 1

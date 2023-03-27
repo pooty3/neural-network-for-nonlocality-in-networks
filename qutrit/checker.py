@@ -266,6 +266,7 @@ def check_violation_for_setting(alice_in, bob_in, alice_out, bob_out, filepath, 
     log.write("A row length: "+  str(len(A[0])) + "\n")
     fast_rej_count = 0
     A_no_comm = generate_polytope_no_comm(alice_in, bob_in, alice_out, bob_out).get_A_matrix()
+    tic1 = time.perf_counter()
     for tr in range(TOTAL):
         alice_U = [db.get_random_unitary2(N = alice_out) for _ in range(alice_in)]
         bob_U = [db.get_random_unitary2(N = bob_out) for _ in range(bob_in)]
@@ -274,6 +275,7 @@ def check_violation_for_setting(alice_in, bob_in, alice_out, bob_out, filepath, 
             for b in range(bob_in):
                 prob += db.getprobabilities(alice_U[a],bob_U[b], 1, N = alice_out)
         print(tr)
+        tic = time.perf_counter()
         if (within_bounds_A(A_no_comm, prob)):
             fast_rej_count += 1 
             log.write("Fast reject!" +  str(fast_rej_count)  + "out of " +  str(tr+1) + "\n")
@@ -284,12 +286,16 @@ def check_violation_for_setting(alice_in, bob_in, alice_out, bob_out, filepath, 
             log.write("Bob " + str(bob_U) + "\n")
             log.write("Alice: "+ str(alice_U) + "\n")
             break
+        toc = time.perf_counter()
+        print(toc-tic)
     log.write("Tried " + str(TOTAL)  + " samples in total\n")
+    toc1 = time.perf_counter()
+    log.write("TIME TAKEN: " + str(toc1- tic1) +"\n")
     log.close()
 
 
-#check_violation_for_setting(3,3,3,3, "3333.obj", "3333log.txt", 4000)
-#check_violation_for_setting(3,4,3,3, "3333.obj", "3433log.txt", 1000)
+check_violation_for_setting(3,3,3,3, "3333.obj", "3333log.txt", 10000)
+#check_violation_for_setting(3,4,3,3, "4333.obj", "4333log.txt", 1000)
 #check_violation_for_setting(4,3,3,3, "3333.obj", "4333log.txt", 1000)
 #check_violation_for_setting(3,4,3,3, "3433.obj") #11
 #check_violation_for_setting(4,3,3,3, "4333.obj") #9
