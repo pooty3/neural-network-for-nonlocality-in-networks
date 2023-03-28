@@ -1,0 +1,2 @@
+"/app1/common/singularity-img/3.0.0/tensorflow_2.9.1_cuda_11.8.0-cudnn8-ubuntu20.04-py38.sif"
+export PYTHONPATH=$PYTHONPATH:/home/svu/e0407574/volta_pypkg/lib/python3.8/site-packages
