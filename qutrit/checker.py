@@ -294,8 +294,8 @@ def check_violation_for_setting(alice_in, bob_in, alice_out, bob_out, filepath, 
     log.close()
 
 
-check_violation_for_setting(3,3,3,3, "3333.obj", "3333log.txt", 10000)
-#check_violation_for_setting(3,4,3,3, "4333.obj", "4333log.txt", 1000)
-#check_violation_for_setting(4,3,3,3, "3333.obj", "4333log.txt", 1000)
-#check_violation_for_setting(3,4,3,3, "3433.obj") #11
+#check_violation_for_setting(3,3,3,3, "3333.obj", "3333log.txt", 10000)
+#check_violation_for_setting(3,4,3,3, "3433.obj", "3433log.txt", 300)
+#check_violation_for_setting(4,3,3,3, "4333.obj", "4333log.txt", 300)
+check_violation_for_setting(3,3,4,4, "3344.obj", "3344log.txt", 500) #11
 #check_violation_for_setting(4,3,3,3, "4333.obj") #9

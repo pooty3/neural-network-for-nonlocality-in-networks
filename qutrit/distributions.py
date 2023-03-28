@@ -24,7 +24,7 @@ def get_maximally_entangled_state(N = 3):
     return (1/np.sqrt(N)*sum([qt.tensor(qt.basis(N,i), qt.basis(N,i)) for i in range(N)])).proj()
 
 def werner_state(w, N = 3):
-    s1 = get_maximally_entangled_state()*w
+    s1 = get_maximally_entangled_state(N)*w
     s2 = (1-w)/(N*N)*qt.tensor(qt.identity(N), qt.identity(N))
     return s1+s2
 

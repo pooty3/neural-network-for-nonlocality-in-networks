@@ -12,7 +12,7 @@ import random
 import tensorflow as tf
 import matplotlib.pyplot as plt
 import pandas as pd
-total_inputs = 300000
+total_inputs = 30
 
 
 model_path = "my_model3.h5"
@@ -67,10 +67,14 @@ def plotP(v1,v2, image_path):
         val_p.append(val)  
         actual_results.append((phi, theta, val))
     plt.scatter(x = phis, y = thetas, c = val_p,cmap = 'viridis')
+    plt.title("Scatterplot of communication bit")
+    plt.xlabel(r'$\phi$ (radians)')
+    plt.ylabel(r'$\theta$ (radians)')
     [p1, t1] = get_polar(v1)
     [p2, t2] = get_polar(v2)
     plt.plot([p1,p2], [t1,t2], marker =  "*", ls="none", ms=20)
-    plt.colorbar()
+    cl = plt.colorbar()
+    cl.set_label("Probability of sending c = 1")
     plt.savefig(image_path)
    # print(actual_results)
 
@@ -101,6 +105,9 @@ def plotvalue(v1, v2, value_idx, image_path):
     plt.plot([p1,p2], [t1,t2], marker =  "*", ls="none", ms=20)
     plt.colorbar()
     plt.savefig(image_path)
+
+
 #plotP([1,0,0], [0,1,0], "img44.png")
 
 
+plotP(get_cart(0, math.pi/2), get_cart(math.pi/2, math.pi/2), "c_img_A.png")

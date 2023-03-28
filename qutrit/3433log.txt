@@ -1,0 +1,34 @@
+A length: 109
+A row length: 527067
+Fast reject!1out of 1
+Fast reject!2out of 7
+Fast reject!3out of 9
+Fast reject!4out of 10
+Fast reject!5out of 18
+Fast reject!6out of 19
+Fast reject!7out of 21
+Fast reject!8out of 26
+Fast reject!9out of 29
+Fast reject!10out of 32
+Fast reject!11out of 44
+Fast reject!12out of 56
+Fast reject!13out of 83
+Fast reject!14out of 89
+Fast reject!15out of 95
+Fast reject!16out of 111
+Fast reject!17out of 149
+Fast reject!18out of 154
+Fast reject!19out of 184
+Fast reject!20out of 200
+Fast reject!21out of 201
+Fast reject!22out of 202
+Fast reject!23out of 235
+Fast reject!24out of 250
+Fast reject!25out of 254
+Fast reject!26out of 256
+Fast reject!27out of 258
+Fast reject!28out of 284
+Fast reject!29out of 289
+Fast reject!30out of 296
+Tried 300 samples in total
+TIME TAKEN: 2666.2116895
