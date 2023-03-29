@@ -199,8 +199,8 @@ batch_per_epochs = 100
 v_steps = 25
 space1 = [1.0, 0.7,0.75, 0.33, 0.0, 0.5, 0.6,0.65, 0.67, 0.68, 0.69]
 space2 = [0.705, 0.706, 0.707, 0.708, 0.709, 0.71, 0.72, 0.73, 0.8, 0.9]
-
-touse = space1
+space3 = [0.705]
+touse = space3
 
 def run_model(img_path, data_path):
     entangled_amount = []
@@ -247,5 +247,5 @@ def run_model_communication(img_path, data_path):
     plt.savefig(img_path)
 
 
-run_model_communication("chsh2_comm.png", "chsh_comm.txt")
+run_model_communication("tempp.png", "tempp.txt")
 #run_model("chsh22.png", "chsh22.txt")

@@ -13,7 +13,7 @@ import tensorflow as tf
 import distributions as db
 from math import *
 hidden_variable_size = 500
-batch_size = 400
+batch_size = 200
 
  
 def generate_unit_vector(): 
@@ -175,7 +175,7 @@ def compute_loss_communication(y_true, y_pred):
     return loss/(batch_size)
 
 no_of_epochs = 100
-batch_per_epochs = 50
+batch_per_epochs = 30
 data_points = 13
 
 wspace = [0, 0.3, 0.5, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95, 1.0]
@@ -232,4 +232,50 @@ def train_and_save_comm(model_path):
     model.fit(generate_xy_batch(1.0), steps_per_epoch = batch_per_epochs, epochs = 100, verbose=1, validation_data=generate_xy_batch(1.0), validation_steps=5, class_weight=None, max_queue_size=10, workers=1, use_multiprocessing=False, shuffle=False, initial_epoch=0)
     model.save(model_path)
 
-train_and_save_comm("spin_model_kl.h5")
+def train_and_save_non_comm(model_path):
+    model = build_model()
+    #model = build_model2()
+    optimizer = "adam"
+    model.compile(loss = compute_loss, optimizer = optimizer, metrics = [])
+    model.fit(generate_xy_batch(1.0), steps_per_epoch = batch_per_epochs, epochs = 25, verbose=1, validation_data=generate_xy_batch(1.0), validation_steps=5, class_weight=None, max_queue_size=10, workers=1, use_multiprocessing=False, shuffle=False, initial_epoch=0)
+    gg = model.evaluate(generate_xy_batch(1.0), steps = 100)
+    f = open("some_data.txt", 'w+')
+    f.write(gg)
+    f.close()
+    model.save(model_path)
+
+def generate_unit_vector(): 
+    x = random.uniform(-1,1)
+    y = random.uniform(-1,1)
+    z = random.uniform(-1,1)
+    vec = [x,y,z]
+    return vec/np.linalg.norm(vec)
+
+def generate_inputs(v1,v2, total_inputs):
+    inputs = []
+    vv1 = convert_to_spherical(v1)
+    vv2 = convert_to_spherical(v2)
+    for _ in range(total_inputs):
+        alice = convert_to_spherical(generate_unit_vector())
+        bob = convert_to_spherical(generate_unit_vector())
+        input= np.concatenate((vv1,vv2,alice,bob))
+        inputs.append(input.tolist())
+    return inputs
+
+def get_data():
+    v1 = [0,0,1]
+    v2 = [0,1,0]
+    inputs = generate_inputs(v1,v2, 100000)
+    model = load_model("spin_model_kl.h5", compile = False)
+    results = model.predict(inputs)
+    f = open("some_data.txt", 'w')
+    for idx in range(len(results)):
+        for da in inputs[idx]:
+            f.write(f'{da:.5f} ')
+        for da in results[idx]:
+            f.write(f'{da: .5f} ')
+        f.write('\n')
+#train_and_save_comm("spin_model_kl.h5")
+#train_and_save_non_comm("spin_model_non_kl.h5")
+
+get_data()
