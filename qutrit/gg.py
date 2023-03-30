@@ -8,6 +8,7 @@ def get_polar(vec):
     theta = math.acos(z)
     return [phi, theta]
 
+<<<<<<< HEAD
 def get_cart(vv):
     theta = vv[1]
     phi = vv[0]
@@ -15,6 +16,8 @@ def get_cart(vv):
     x = math.sin(theta)*math.cos(phi)
     y = math.sin(theta)*math.sin(phi)
     return [x,y,z]
+=======
+>>>>>>> c6e660feeeb2df5c67f6dcbb70a81427bb23dab7
 
 f = open("some_data.txt", "r")
 lines = f.readlines()
@@ -24,10 +27,17 @@ def dot_product(vec1, vec2):
 class Data:
     def __init__(self, line):
         tokens = list(map(float, line.split()))
+<<<<<<< HEAD
         self.lam1 = get_cart(tokens[:2])
         self.lam2 = get_cart(tokens[2:4])
         self.x = get_cart(tokens[4:6])
         self.y = get_cart(tokens[6:8])
+=======
+        self.lam1 = tokens[:2]
+        self.lam2 = tokens[2:4]
+        self.x = tokens[4:6]
+        self.y = tokens[6:8]
+>>>>>>> c6e660feeeb2df5c67f6dcbb70a81427bb23dab7
         self.a1 = tokens[8:11]
         self.b1 = tokens[11:14]
         self.a2 = tokens[14:17]
@@ -57,6 +67,7 @@ datas = list(map(Data, lines[SIZE:SIZE + CC]))
 # c1.set_label(r'$P_{B_1}(b = 0)$')
 # plt.savefig("Figure_B25.png")
 
+<<<<<<< HEAD
 # def plotter(l1, l2, file, phis, thetas, p, label):
 #     plt.cla()
 #     plt.clf()
@@ -147,3 +158,40 @@ plotter(datas[0].lam1, datas[0].lam2, [data.y for data in datas],
 #         [data.y[1] for data in datas], 
 #         [data.b2[2] for data in datas],
 #         "P(c = 0)")
+=======
+def plotter(l1, l2, file, phis, thetas, p, label):
+    plt.cla()
+    plt.clf()
+    plt.scatter(x = phis, y = thetas, c = p, cmap = 'viridis')
+    plt.title("Scatterplot of " + label)
+    plt.xlabel(r'$\phi$ (radians)')
+    plt.ylabel(r'$\theta$ (radians)')
+
+    [p1, t1] = l1
+    [p2, t2] = l2
+    plt.plot(p1, t1, marker = "*", ls = "none", ms = 20)
+    plt.plot(p2, t2, marker = "X", ls = "none", ms = 20)
+
+    c1 = plt.colorbar()
+    c1.set_label(label)
+    plt.savefig(file)
+
+plotter(datas[0].lam1, datas[0].lam2, 
+        "Figure_B2_0.png", 
+        [data.y[0] for data in datas], 
+        [data.y[1] for data in datas], 
+        [data.b2[0] for data in datas],
+        "P(c = 0)")
+plotter(datas[0].lam1, datas[0].lam2, 
+        "Figure_B2_1.png", 
+        [data.y[0] for data in datas], 
+        [data.y[1] for data in datas], 
+        [data.b2[1] for data in datas],
+        "P(c = 0)")
+plotter(datas[0].lam1, datas[0].lam2, 
+        "Figure_B2_2.png", 
+        [data.y[0] for data in datas], 
+        [data.y[1] for data in datas], 
+        [data.b2[2] for data in datas],
+        "P(c = 0)")
+>>>>>>> c6e660feeeb2df5c67f6dcbb70a81427bb23dab7
